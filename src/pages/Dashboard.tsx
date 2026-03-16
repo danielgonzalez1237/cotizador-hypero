@@ -64,16 +64,35 @@ function MineralCard({ mineral }: { mineral: MineralInfo }) {
 }
 
 export default function Dashboard() {
-  const { lastUpdated } = useStore()
+  const { lastUpdated, dataSources, refreshAll, loading, senarecom } = useStore()
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Dashboard de Precios</h1>
-        <span className="text-xs text-gray-500">
-          Actualizado: {new Date(lastUpdated).toLocaleString('es-BO')}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => refreshAll()}
+            disabled={loading}
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded text-sm font-medium transition-colors"
+          >
+            {loading ? 'Actualizando...' : 'Actualizar'}
+          </button>
+          <span className="text-xs text-gray-500">
+            {new Date(lastUpdated).toLocaleString('es-BO')}
+          </span>
+        </div>
       </div>
+
+      {Object.keys(dataSources).length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {Object.entries(dataSources).map(([key, source]) => (
+            <span key={key} className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded">
+              {key}: {source}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {MINERAL_LIST.map((m) => (
@@ -82,7 +101,9 @@ export default function Dashboard() {
       </div>
 
       <div className="mt-6 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-sm font-semibold text-gray-400 mb-3">SENARECOM — 2da Quincena Marzo 2026</h2>
+        <h2 className="text-sm font-semibold text-gray-400 mb-3">
+          SENARECOM — {senarecom.periodo}
+        </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
